@@ -59,8 +59,8 @@ section{padding:clamp(96px,12vw,170px) 0 0}
   background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 34px -14px rgba(10,13,46,.5)}
 .dock a{text-decoration:none;padding:8px 14px;border-radius:999px;color:var(--blue);transition:background .2s}
 .dock a:hover{background:rgba(45,51,245,.08)}
-.dock .mark{font-family:var(--display);font-size:12px;font-weight:800;color:#fff;background:var(--tan)}
-.dock .mark:hover{background:var(--tan)}
+.dock .mark{font-family:var(--display);font-size:12px;font-weight:800;color:#fff;background:var(--blue)}
+.dock .mark:hover{background:var(--blue)}
 .dock .cta{color:#fff;background:var(--ink)}
 .dock .cta:hover{background:#000}
 @media (max-width:640px){.dock .hide-sm{display:none}}
@@ -91,7 +91,8 @@ section{padding:clamp(96px,12vw,170px) 0 0}
 
 /* ---------- statement ---------- */
 .about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,5vw,72px);align-items:start}
-.statement{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(38px,4.6vw,76px);line-height:.95;letter-spacing:-.02em}
+/* sized off the column width so "OPERATOR." never clips */
+.statement{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(34px,3.7vw,64px);line-height:.95;letter-spacing:-.02em}
 .statement .holo{display:block;background:var(--accent);-webkit-background-clip:text;background-clip:text;color:transparent}
 .about-body p{font-size:clamp(19px,1.7vw,24px);line-height:1.45;color:var(--w-2);letter-spacing:-.01em}
 .about-body p+p{margin-top:18px}
@@ -111,7 +112,7 @@ section{padding:clamp(96px,12vw,170px) 0 0}
 .facts{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 clamp(28px,4vw,44px)}
 #work{padding-top:clamp(56px,6vw,80px)}
 .fact{display:flex;align-items:center;gap:12px;padding:10px 18px 10px 10px;border-radius:999px;background:#fff;color:var(--ink);font-weight:600;font-size:15px}
-.fact i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-family:var(--display);font-size:9.5px;font-weight:800;color:#fff;background:var(--tan)}
+.fact i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-family:var(--display);font-size:9.5px;font-weight:800;color:#fff;background:var(--blue)}
 .fact.s i{background:var(--ink)}
 .fact small{color:rgba(10,13,46,.5);font-family:var(--mono);font-size:12px;font-weight:400}
 
@@ -238,6 +239,23 @@ section{padding:clamp(96px,12vw,170px) 0 0}
 .rev .stage-row .meter{height:12px}
 @container (max-width:520px){.rev{grid-template-columns:1fr}.rev .funnel{display:none}}
 @container sb (max-height:250px){.rev{grid-template-columns:1fr}}
+/* unified forecast: two sources feeding one model */
+.uni{display:grid;grid-template-columns:minmax(0,.75fr) 44px minmax(0,1.6fr);column-gap:6px;flex:1;min-height:0}
+.srcs2{display:flex;flex-direction:column;justify-content:space-around;gap:8px}
+.src2{display:flex;flex-direction:column;gap:4px}
+.src2 b{color:var(--text);font-weight:600;font-size:13.5px;line-height:1.2}
+.wires2{width:100%;height:100%}
+@container (max-width:520px){.uni{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);row-gap:8px}.srcs2{flex-direction:row}.srcs2 .tile{flex:1}.wires2{display:none}}
+/* data governance access matrix */
+.gov{flex:1;min-height:0;display:flex;flex-direction:column}
+.gh,.gr{display:grid;grid-template-columns:1.7fr repeat(3,1fr);gap:8px;align-items:center}
+.gh{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:2px 0 6px}
+.gr{padding:6px 0;border-top:1px solid var(--border);color:var(--text)}
+.gr em{font-style:normal;color:var(--faint)}
+.acc-ok,.acc-no{font-family:var(--mono);font-size:12px}
+.acc-ok{color:#6EE7B7}.acc-no{color:var(--faint)}
+.acc-ok i,.acc-no i{font-style:normal}
+@container (max-width:420px){.gh,.gr{grid-template-columns:1.5fr repeat(3,.7fr)}.gr em{display:none}}
 /* client standings */
 .stand{flex:1;min-height:0;display:flex;flex-direction:column}
 .stand .th,.stand .tr{display:grid;grid-template-columns:1.3fr .7fr 1fr 1fr .8fr 1fr;align-items:center;gap:8px}
@@ -713,13 +731,17 @@ const nsl = 'vector-effect="non-scaling-stroke"';
 
 const M = {
   revenue: () => `
-    <div class="row hide-xs"><div><div class="lbl">Total pipeline</div><div class="big" style="font-size:24px">$500M+</div></div><span class="chip hide-n"><i class="ln"></i>Actuals</span><span class="chip hide-n"><i class="ln dash"></i>Forecast</span><span class="chip ok push"><span class="live"></span>live</span></div>
-    <div class="rev">
-      <div class="tile funnel hide-s"><span class="lbl">Pipeline by stage</span>
-        ${[['Lead',100],['Qualified',76],['Proposal',54],['Negotiation',36],['Closed won',22]].map(([s,w],i)=>`
-          <div class="stage-row"><span class="lbl">${s}</span><div class="meter"><i class="grow" style="--w:${w}%;--i:${i}"></i></div></div>`).join('')}
+    <div class="row hide-xs"><span class="chip"><i class="ln"></i>NetSuite actuals</span><span class="chip"><i class="ln dash"></i>Salesforce forecast</span><span class="chip ok push hide-n"><span class="live"></span>live</span></div>
+    <div class="uni">
+      <div class="srcs2">
+        <div class="tile src2"><span class="lbl">NetSuite</span><b>Actuals</b><span class="sk grow hide-xs" style="width:70%;--i:1"></span></div>
+        <div class="tile src2"><span class="lbl">Salesforce</span><b>Pipeline + forecast</b><span class="sk grow hide-xs" style="width:55%;--i:2"></span></div>
       </div>
-      <div class="tile" style="display:flex;flex-direction:column;gap:6px"><span class="lbl">Revenue forecast</span>
+      <svg class="wires2" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        ${[25,75].map(y=>`<path d="M0 ${y} C50 ${y} 50 50 100 50" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1" ${nsl}/>
+          <path class="flow" d="M0 ${y} C50 ${y} 50 50 100 50" fill="none" stroke="var(--tint)" stroke-width="1.5" ${nsl}/>`).join('')}
+      </svg>
+      <div class="tile" style="display:flex;flex-direction:column;gap:6px;min-height:0"><span class="lbl">One forecast model</span>
     <div class="chart-wrap">
       <svg viewBox="0 0 400 160" preserveAspectRatio="none" aria-hidden="true">
         <defs><linearGradient id="fa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7DD3FC" stop-opacity=".28"/><stop offset="1" stop-color="#7DD3FC" stop-opacity="0"/></linearGradient></defs>
@@ -731,7 +753,7 @@ const M = {
       </svg>
       <div class="today"><span>today</span></div>
     </div>
-    <div class="axis">${months.filter((_,i)=>i%2===0).map(m=>`<span>${m}</span>`).join('')}</div>
+    <div class="axis hide-xs">${months.filter((_,i)=>i%2===0).map(m=>`<span>${m}</span>`).join('')}</div>
       </div>
     </div>`,
 
@@ -747,27 +769,22 @@ const M = {
         <div class="tile"><span class="lbl">employees trained</span>
           <div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3.5"/><circle class="draw" pathLength="1" cx="18" cy="18" r="15" fill="none" stroke="var(--tint)" stroke-width="3.5" stroke-linecap="round"/></svg><b>100+</b></div>
         </div>
-        <div class="tile"><span class="lbl">saved in beta month</span><span class="big">$60K</span>
+        <div class="tile hide-xs"><span class="lbl">saved in beta month</span><span class="big">$60K</span>
           <div class="hbars">${[22,35,48,60,78,100].map((h,i)=>`<i class="growy" style="--h:${h}%;--i:${i}"></i>`).join('')}</div>
         </div>
       </div>
     </div>`;
   },
 
-  crm: () => {
-    const ys = [10,30,50,70,90];
+  governance: () => {
+    const cols = ['Salary','Revenue','PII'];
+    const rows = [['Finance','Director',[1,1,1]],['Sales','Manager',[0,1,0]],['People','Lead',[1,0,1]],['Operations','Analyst',[0,0,0]]];
+    const cell = v => v ? '<span class="acc-ok">✓<i class="hide-n"> visible</i></span>' : '<span class="acc-no">—<i class="hide-n"> masked</i></span>';
     return `
-    <div class="crm">
-      <div class="srcs">${ys.map((_,i)=>`<div class="src">${db}<span><span class="lg">Legacy </span>CRM ${i+1}</span></div>`).join('')}</div>
-      <svg class="wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        ${ys.map(y=>`<path d="M0 ${y} C55 ${y} 45 50 100 50" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1" ${nsl}/>
-          <path class="flow" d="M0 ${y} C55 ${y} 45 50 100 50" fill="none" stroke="var(--tint)" stroke-width="1.5" ${nsl}/>`).join('')}
-      </svg>
-      <div class="record">
-        <div class="rec-h"><span>Account record</span><span class="chip acc">unified</span></div>
-        ${['Account','Owner','Stage','Pipeline','Source'].map((f,i)=>`<div class="field${i>3?' hide-n':''}${i===1||i===4?' hide-s':''}${i===2?' hide-xs':''}"><span class="lbl">${f}</span><span class="sk grow" style="width:${[78,55,64,48,70][i]}%;--i:${i+2}"></span></div>`).join('')}
-        <div class="row hide-n hide-s" style="margin-top:8px"><span class="chip">Salesforce</span><span class="chip">HubSpot</span></div>
-      </div>
+    <div class="row hide-xs"><span class="chip acc">Okta attributes</span><span class="lbl">→</span><span class="chip">department + position level</span><span class="lbl hide-n">→</span><span class="chip ok hide-n">field-level access</span></div>
+    <div class="tile gov">
+      <div class="gh"><span>Department · level</span>${cols.map(c=>`<span>${c}</span>`).join('')}</div>
+      ${rows.map(([d,l,a],i)=>`<div class="gr fade${i===3?' hide-xs':''}" style="--i:${i+1}"><span>${d} <em>· ${l}</em></span>${a.map(cell).join('')}</div>`).join('')}
     </div>`;
   },
 
@@ -813,21 +830,21 @@ const M = {
 
 /* ---------- project data ---------- */
 const projects = [
-  {cat:"Revenue Operations", tint:"sky", viz:"revenue", app:"pipeline_forecast · live",
-   title:"Pipeline reporting and the company’s first revenue forecast",
-   desc:"Built VaynerX’s first revenue forecasting model and the live pipeline reporting the C-suite uses to track the funnel, lead scoring, and forecast in one place.",
-   metrics:[["$500M+","pipeline tracked"],["15 → 5 days","forecast prep time"],["First","revenue model in company history"]]},
+  {cat:"Revenue Operations", tint:"sky", viz:"revenue", app:"unified_forecast · live",
+   title:"The company’s first single forecast model",
+   desc:"Combined NetSuite actuals with Salesforce forecast values to create the company’s first single forecast model, after consolidating five CRMs into one.",
+   metrics:[["$500M+","pipeline in one forecast"],["15 → 5 days","forecast prep time"],["5 → 1","CRMs consolidated"]]},
   {cat:"AI Enablement", tint:"teal", viz:"enable", app:"claude_enablement · program",
    title:"Company-wide Claude AI training",
-   desc:"Led the rollout of Claude AI across VaynerX and trained employees to automate repetitive reporting and admin work.",
+   desc:"Led the company-wide rollout of Claude AI and trained employees to automate repetitive reporting and admin work.",
    metrics:[["$60K","of work saved in the beta month alone"],["$720K","projected annual savings"],["100+","employees trained"]]},
-  {cat:"CRM Architecture", tint:"indigo", viz:"crm", app:"crm_migration · data model",
-   title:"Five CRMs consolidated into one",
-   desc:"Ran Salesforce and HubSpot implementations at the same time and merged five separate CRMs into a single source of truth.",
-   metrics:[["5 → 1","CRMs"],["2","implementations run in parallel"]]},
+  {cat:"Data Governance", tint:"indigo", viz:"governance", app:"data_governance · Okta",
+   title:"A data governance strategy built on Okta",
+   desc:"Created the strategy that maps each person’s data security level from Okta, by department and position level, so sensitive fields like salary, revenue, and PII are visible only to the right people.",
+   metrics:[["Okta-driven","access by department and position level"],["Field-level","security across the semantic layer"]]},
   {cat:"Financial Relations", tint:"violet", viz:"finance", app:"financial_relations · PowerBI",
    title:"A Financial Relations dashboard for client standings",
-   desc:"At Sony Music, built a PowerBI and Excel dashboard showing every client’s standing across billing, reconciliations, journal entries, and royalties.",
+   desc:"Built a PowerBI and Excel dashboard showing every client’s standing across billing, reconciliations, journal entries, and royalties.",
    metrics:[["1 week → 1 day","reporting lag"],["12","finance team members served"]]},
   {cat:"Process Design", tint:"teal", viz:"workflow", app:"vendor_procurement · board",
    title:"A vendor request workflow for the procurement team",
